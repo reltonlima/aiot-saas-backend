@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle do Dispositivo - AIoT Control Deck</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6d28d9; --primary-hover: #5b21b6; --background-color: #111827;
+            --card-color: #1f2937; --text-color: #f9fafb; --text-muted: #9ca3af;
+            --border-radius: 12px;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--background-color); color: var(--text-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px; }
+        main { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 30px; }
+        header { display: flex; justify-content: space-between; align-items: center; }
+        header a { color: var(--text-muted); text-decoration: none; font-weight: 500;}
+        header h1 { font-size: 2rem; }
+        .relay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+        .relay-card { background-color: var(--card-color); padding: 20px; border-radius: var(--border-radius); display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .relay-card h2 { font-size: 1.1rem; }
+        .switch { position: relative; display: inline-block; width: 60px; height: 34px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(26px); }
+    </style>
+</head>
+<body>
+    <main id="main-content" style="display: none;">
+        <header>
+            <div>
+                <a href="/dashboard.html">&larr; Voltar para o Painel</a>
+                <h1 id="device-name">Carregando...</h1>
+            </div>
+        </header>
+        <section id="relay-grid" class="relay-grid">
+            </section>
+    </main>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/v1';
+        const MQTT_BROKER_URL = 'wss://broker.hivemq.com:8884/mqtt';
+        const token = localStorage.getItem('authToken');
+        const mainContent = document.getElementById('main-content');
+        const deviceNameTitle = document.getElementById('device-name');
+        const grid = document.getElementById('relay-grid');
+
+        const deviceUuid = new URLSearchParams(window.location.search).get('uuid');
+        if (!token || !deviceUuid) {
+            window.location.href = '/login.html';
+        } else {
+            mainContent.style.display = 'flex';
+        }
+
+        const mqttClient = mqtt.connect(MQTT_BROKER_URL, {
+            clientId: `device-view-${deviceUuid}-${Math.random().toString(16).substr(2, 4)}`
+        });
+
+        document.addEventListener('DOMContentLoaded', initializeDevicePage);
+
+        function initializeDevicePage() {
+            fetchDeviceDetails();
+            grid.addEventListener('change', handleToggleChange);
+            
+            mqttClient.on('connect', () => {
+                const topic = `pluga-shop/devices/${deviceUuid}/estado`;
+                mqttClient.subscribe(topic, (err) => {
+                    if (err) return console.error(`Falha ao se inscrever em ${topic}`);
+                    console.log(`Inscrito em ${topic}`);
+                });
+            });
+
+            mqttClient.on('message', (topic, payload) => {
+                const states = JSON.parse(payload.toString());
+                updateAllToggles(states);
+            });
+        }
+
+        async function fetchDeviceDetails() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/devices/${deviceUuid}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Dispositivo não encontrado.');
+                const device = await response.json();
+                deviceNameTitle.textContent = device.name || 'Dispositivo Sem Nome';
+                renderRelayToggles();
+            } catch (error) {
+                mainContent.innerHTML = `<h1>Erro: ${error.message}</h1><a href="/dashboard.html">Voltar</a>`;
+            }
+        }
+        
+        function renderRelayToggles() {
+            grid.innerHTML = '';
+            for (let i = 1; i <= 8; i++) {
+                const cardHTML = `
+                    <div class="relay-card">
+                        <h2>Relé ${i}</h2>
+                        <label class="switch">
+                            <input type="checkbox" class="relay-toggle" data-rele-id="${i}">
+                            <span class="slider"></span>
+                        </label>
+                    </div>`;
+                grid.insertAdjacentHTML('beforeend', cardHTML);
+            }
+        }
+
+        function updateAllToggles(states) {
+            for (let i = 1; i <= 8; i++) {
+                const toggle = document.querySelector(`.relay-toggle[data-rele-id="${i}"]`);
+                if (toggle) {
+                    const releState = states[i.toString()] === 'on';
+                    if (toggle.checked !== releState) {
+                        toggle.checked = releState;
+                    }
+                }
+            }
+        }
+
+        async function handleToggleChange(event) {
+            if (event.target.classList.contains('relay-toggle')) {
+                const toggle = event.target;
+                const releId = toggle.dataset.releId;
+                const state = toggle.checked ? 'on' : 'off';
+                
+                const endpoint = `/devices/${deviceUuid}/comando`;
+                const body = { rele: parseInt(releId), estado: state };
+
+                try {
+                     await fetch(`${API_BASE_URL}${endpoint}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify(body)
+                    });
+                } catch(err) {
+                     console.error('Erro ao enviar comando:', err);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
