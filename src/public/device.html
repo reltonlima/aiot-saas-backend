@@ -17,6 +17,13 @@
         header { display: flex; justify-content: space-between; align-items: center; }
         header a { color: var(--text-muted); text-decoration: none; font-weight: 500;}
         header h1 { font-size: 2rem; }
+        /* --- NOVO CSS --- */
+        .global-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { background-color: var(--primary-color); color: white; border: none; padding: 15px; font-size: 1rem; font-weight: 500; border-radius: 8px; cursor: pointer; transition: background-color 0.2s; }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: #374151; }
+        .btn-secondary:hover { background-color: #4b5563; }
+        /* --- FIM NOVO CSS --- */
         .relay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
         .relay-card { background-color: var(--card-color); padding: 20px; border-radius: var(--border-radius); display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .relay-card h2 { font-size: 1.1rem; }
@@ -32,10 +39,16 @@
     <main id="main-content" style="display: none;">
         <header>
             <div>
-                <a href="/dashboard.html">&larr; Voltar para o Painel</a>
+                <a href="./dashboard.html">&larr; Voltar para o Painel</a>
                 <h1 id="device-name">Carregando...</h1>
             </div>
         </header>
+
+        <section class="global-controls">
+            <button id="all-on-btn" class="btn">Ligar Todos</button>
+            <button id="all-off-btn" class="btn btn-secondary">Desligar Todos</button>
+        </section>
+
         <section id="relay-grid" class="relay-grid">
             </section>
     </main>
@@ -47,8 +60,8 @@
         const mainContent = document.getElementById('main-content');
         const deviceNameTitle = document.getElementById('device-name');
         const grid = document.getElementById('relay-grid');
-
         const deviceUuid = new URLSearchParams(window.location.search).get('uuid');
+
         if (!token || !deviceUuid) {
             window.location.href = '/login.html';
         } else {
@@ -65,12 +78,13 @@
             fetchDeviceDetails();
             grid.addEventListener('change', handleToggleChange);
             
+            // --- NOVOS EVENT LISTENERS ---
+            document.getElementById('all-on-btn').addEventListener('click', () => handleGlobalCommand('all_on'));
+            document.getElementById('all-off-btn').addEventListener('click', () => handleGlobalCommand('all_off'));
+
             mqttClient.on('connect', () => {
                 const topic = `pluga-shop/devices/${deviceUuid}/estado`;
-                mqttClient.subscribe(topic, (err) => {
-                    if (err) return console.error(`Falha ao se inscrever em ${topic}`);
-                    console.log(`Inscrito em ${topic}`);
-                });
+                mqttClient.subscribe(topic);
             });
 
             mqttClient.on('message', (topic, payload) => {
@@ -81,9 +95,7 @@
 
         async function fetchDeviceDetails() {
             try {
-                const response = await fetch(`${API_BASE_URL}/devices/${deviceUuid}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
+                const response = await fetch(`${API_BASE_URL}/devices/${deviceUuid}`, { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) throw new Error('Dispositivo não encontrado.');
                 const device = await response.json();
                 deviceNameTitle.textContent = device.name || 'Dispositivo Sem Nome';
@@ -119,26 +131,32 @@
                 }
             }
         }
+        
+        async function sendCommand(bodyPayload) {
+            const endpoint = `/devices/${deviceUuid}/comando`;
+            try {
+                 await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(bodyPayload)
+                });
+            } catch(err) {
+                 console.error('Erro ao enviar comando:', err);
+            }
+        }
 
-        async function handleToggleChange(event) {
+        function handleToggleChange(event) {
             if (event.target.classList.contains('relay-toggle')) {
                 const toggle = event.target;
                 const releId = toggle.dataset.releId;
                 const state = toggle.checked ? 'on' : 'off';
-                
-                const endpoint = `/devices/${deviceUuid}/comando`;
-                const body = { rele: parseInt(releId), estado: state };
-
-                try {
-                     await fetch(`${API_BASE_URL}${endpoint}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify(body)
-                    });
-                } catch(err) {
-                     console.error('Erro ao enviar comando:', err);
-                }
+                sendCommand({ rele: parseInt(releId), estado: state });
             }
+        }
+
+        // --- NOVA FUNÇÃO PARA COMANDOS GLOBAIS ---
+        function handleGlobalCommand(command) {
+            sendCommand({ comando: command });
         }
     </script>
 </body>

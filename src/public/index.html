@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pluga Shop AIOT Control Desk - Automação e Controle Inteligente de Dispositivos</title>
+    <meta name="description" content="Controle e automatize seus dispositivos de qualquer lugar do mundo com a plataforma AIoT da Pluga.Shop. Soluções de casa inteligente e automação comercial simples, seguras e em tempo real.">
+    <meta name="keywords" content="IoT, AIoT, automação residencial, casa inteligente, smart home, ESP32, controle de relé, Pluga.Shop, automação comercial">
+    <meta name="author" content="Relton Lima">
+    <link rel="canonical" href="https://aiot.pluga.shop/">
+    
+    <meta property="og:title" content="Pluga Shop AIOT Control Desk - Controle Inteligente na Palma da Sua Mão">
+    <meta property="og:description" content="Transforme qualquer ambiente com nossa plataforma de automação. Monitore e controle luzes, equipamentos e muito mais.">
+    <meta property="og:image" content="https://pluga.shop/assets/img/LogoPlugaShop-512px.png">
+    <meta property="og:url" content="https://aiot.pluga.shop/">
+    <meta property="og:type" content="website">
+
+    <link rel="icon" href="https://pluga.shop/assets/img/LogoPlugaShop-512px.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        :root {
+            --primary-color: #6d28d9;
+            --primary-hover: #5b21b6;
+            --background-color: #111827;
+            --card-color: #1f2937;
+            --text-color: #f9fafb;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
+            --border-radius: 12px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        /* Cabeçalho */
+        .main-header {
+            padding: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-color); font-size: 1.5rem; font-weight: 700;}
+        .logo img { height: 40px; }
+        .main-nav a { color: var(--text-muted); text-decoration: none; margin-left: 25px; font-weight: 500; transition: color 0.2s; }
+        .main-nav a:hover { color: var(--text-color); }
+        .btn { display: inline-block; background-color: var(--primary-color); color: white; padding: 12px 28px; font-size: 1rem; font-weight: 500; border-radius: 8px; text-decoration: none; transition: background-color 0.2s; }
+        .btn:hover { background-color: var(--primary-hover); }
+        
+        /* Seção Hero */
+        #hero {
+            padding: 100px 0;
+            text-align: center;
+        }
+        #hero h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.2;
+            background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        #hero p {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 40px auto;
+        }
+        #hero .btn { font-size: 1.1rem; padding: 15px 35px; }
+
+        /* Seções Genéricas */
+        .section { padding: 80px 0; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; }
+        
+        /* Funcionalidades */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .feature-card { background-color: var(--card-color); padding: 30px; border-radius: var(--border-radius); border: 1px solid var(--border-color); }
+        .feature-card i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 15px; }
+        .feature-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        
+        /* Rodapé */
+        .site-footer {
+            margin-top: 40px; padding: 40px 0; border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .site-footer p, .site-footer p a { color: var(--text-muted); text-decoration: none; }
+        .site-footer p a:hover { text-decoration: underline; }
+        .social-links a { color: var(--text-muted); font-size: 1.5rem; margin-left: 20px; transition: color 0.2s; }
+        .social-links a:hover { color: var(--primary-color); }
+        @media (max-width: 768px) {
+            #hero h1 { font-size: 3rem; }
+            .main-header { flex-direction: column; gap: 20px;}
+            .site-footer { flex-direction: column; text-align: center; }
+            .social-links a { margin: 0 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="main-header container">
+        <a href="#" class="logo">
+            <img src="https://pluga.shop/assets/img/LogoPlugaShop-512px.png" alt="Logo Pluga.Shop">
+            <span>Pluga Shop AIOT Control Desk</span>
+        </a>
+        <nav class="main-nav">
+            <a href="#features">Funcionalidades</a>
+            <a href="login.html" class="btn">Acessar Plataforma</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero">
+            <div class="container">
+                <h1>O Futuro da Automação na Palma da Sua Mão</h1>
+                <p>Monitore, controle e automatize seus dispositivos de forma inteligente e segura, de qualquer lugar do mundo. A solução definitiva para sua casa ou negócio.</p>
+                <a href="login.html" class="btn">Começar Agora</a>
+            </div>
+        </section>
+
+        <section id="features" class="section">
+            <div class="container">
+                <h2 class="section-title">Controle Sem Limites</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-bolt"></i>
+                        <h3>Controle em Tempo Real</h3>
+                        <p>Com a tecnologia MQTT, seus comandos são executados instantaneamente, sem atrasos ou esperas.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Segurança de Ponta</h3>
+                        <p>Sua conta e seus dispositivos são isolados e protegidos com autenticação moderna e segura.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <h3>Acesso Universal</h3>
+                        <p>Acesse seu painel de controle a partir de qualquer navegador, seja no seu computador, tablet ou smartphone.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="site-footer container">
+            <p>&copy; 2025 - Desenvolvido com ❤️ e muito café por <a href="https://www.linkedin.com/in/reltonfidelis/" target="_blank">Relton Lima</a>. Todos os direitos reservados.</p>
+            <div class="social-links">
+                <a href="https://github.com/reltonlima" target="_blank" aria-label="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://linkedin.com/in/reltonfidelis" target="_blank" aria-label="LinkedIn">
+                    <i class="fab fa-linkedin"></i>
+                </a>
+            </div>
+        </footer>
+    </main>
+
+</body>
+</html>
