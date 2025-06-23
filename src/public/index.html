@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pluga Shop AIOT Control Desk - Automação e Controle Inteligente de Dispositivos</title>
-    <meta name="description" content="Controle e automatize seus dispositivos de qualquer lugar do mundo com a plataforma AIoT da Pluga.Shop. Soluções de casa inteligente e automação comercial simples, seguras e em tempo real.">
-    <meta name="keywords" content="IoT, AIoT, automação residencial, casa inteligente, smart home, ESP32, controle de relé, Pluga.Shop, automação comercial">
+    <title>Pluga.Shop AIoT - Automação e Controle Inteligente de Dispositivos</title>
+    <meta name="description" content="Programe seu café, controle luzes e automatize qualquer dispositivo de qualquer lugar do mundo com a plataforma AIoT da Pluga.Shop.">
+    <meta name="keywords" content="IoT, AIoT, automação residencial, casa inteligente, smart home, ESP32, controle de relé, Pluga.Shop, automação comercial, controle remoto, alimentador de pets, cafeteira inteligente">
     <meta name="author" content="Relton Lima">
     <link rel="canonical" href="https://aiot.pluga.shop/">
     
-    <meta property="og:title" content="Pluga Shop AIOT Control Desk - Controle Inteligente na Palma da Sua Mão">
+    <meta property="og:title" content="Pluga.Shop AIoT - Controle Inteligente na Palma da Sua Mão">
     <meta property="og:description" content="Transforme qualquer ambiente com nossa plataforma de automação. Monitore e controle luzes, equipamentos e muito mais.">
     <meta property="og:image" content="https://pluga.shop/assets/img/LogoPlugaShop-512px.png">
     <meta property="og:url" content="https://aiot.pluga.shop/">
@@ -23,100 +23,80 @@
 
     <style>
         :root {
-            --primary-color: #6d28d9;
-            --primary-hover: #5b21b6;
-            --background-color: #111827;
-            --card-color: #1f2937;
-            --text-color: #f9fafb;
-            --text-muted: #9ca3af;
-            --border-color: #374151;
-            --border-radius: 12px;
+            --primary-color: #6d28d9; --primary-hover: #5b21b6; --background-color: #111827;
+            --card-color: #1f2937; --text-color: #f9fafb; --text-muted: #9ca3af;
+            --border-color: #374151; --border-radius: 12px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
+        body { font-family: 'Inter', sans-serif; background-color: var(--background-color); color: var(--text-color); line-height: 1.7; }
+        .container { width: 90%; max-width: 1100px; margin: 0 auto; }
+        .btn { display: inline-block; background-color: var(--primary-color); color: white; padding: 12px 28px; font-size: 1rem; font-weight: 500; border-radius: 8px; text-decoration: none; transition: background-color 0.2s; }
+        .btn:hover { background-color: var(--primary-hover); }
+        .section { padding: 80px 0; }
+        .section-title { text-align: center; font-size: 2.8rem; font-weight: 900; margin-bottom: 15px; }
+        .section-subtitle { text-align: center; font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 60px auto; }
+        
+        /* Layout do Grid Corrigido */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Padrão Mobile-first: 1 coluna */
+            gap: 30px;
         }
-        .container {
-            width: 90%;
-            max-width: 1100px;
-            margin: 0 auto;
+        /* Em telas maiores, muda para 2 colunas */
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
-        /* Cabeçalho */
-        .main-header {
-            padding: 20px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+
+        .main-header { padding: 20px 0; display: flex; justify-content: space-between; align-items: center; }
         .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-color); font-size: 1.5rem; font-weight: 700;}
         .logo img { height: 40px; }
         .main-nav a { color: var(--text-muted); text-decoration: none; margin-left: 25px; font-weight: 500; transition: color 0.2s; }
         .main-nav a:hover { color: var(--text-color); }
-        .btn { display: inline-block; background-color: var(--primary-color); color: white; padding: 12px 28px; font-size: 1rem; font-weight: 500; border-radius: 8px; text-decoration: none; transition: background-color 0.2s; }
-        .btn:hover { background-color: var(--primary-hover); }
-        
-        /* Seção Hero */
-        #hero {
-            padding: 100px 0;
-            text-align: center;
-        }
-        #hero h1 {
-            font-size: 4rem;
-            font-weight: 900;
-            line-height: 1.2;
-            background: linear-gradient(90deg, #a78bfa, #c4b5fd);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-        }
-        #hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            max-width: 650px;
-            margin: 0 auto 40px auto;
-        }
+        #hero { padding: 100px 0; text-align: center; }
+        #hero h1 { font-size: 4rem; font-weight: 900; line-height: 1.2; background: linear-gradient(90deg, #a78bfa, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
+        #hero p { font-size: 1.25rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 40px auto; }
         #hero .btn { font-size: 1.1rem; padding: 15px 35px; }
-
-        /* Seções Genéricas */
-        .section { padding: 80px 0; }
-        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 50px; }
-        
-        /* Funcionalidades */
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
-        .feature-card { background-color: var(--card-color); padding: 30px; border-radius: var(--border-radius); border: 1px solid var(--border-color); }
-        .feature-card i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 15px; }
+        .feature-card { background-color: var(--card-color); padding: 30px; border-radius: var(--border-radius); text-align: center; border: 1px solid var(--border-color);}
+        .feature-card i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 20px; }
         .feature-card h3 { font-size: 1.5rem; margin-bottom: 10px; }
-        
-        /* Rodapé */
-        .site-footer {
-            margin-top: 40px; padding: 40px 0; border-top: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
-        }
+        .process-step { display: flex; align-items: center; gap: 30px; margin-bottom: 40px; }
+        .process-step .step-number { font-size: 4rem; font-weight: 900; color: var(--border-color); }
+        .process-step h3 { font-size: 1.8rem; margin-bottom: 5px; }
+        .use-case-card { background-color: var(--card-color); border-radius: var(--border-radius); overflow: hidden; border: 1px solid var(--border-color);}
+        .use-case-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+        .use-case-card-content { padding: 25px; }
+        .use-case-card-content h3 { font-size: 1.5rem; margin-bottom: 10px; }
+        .testimonial-card { background-color: var(--card-color); padding: 30px; border-left: 5px solid var(--primary-color); border-radius: var(--border-radius); }
+        .testimonial-card p { font-style: italic; font-size: 1.1rem; }
+        .testimonial-card .author { font-weight: 700; margin-top: 20px; display: block; color: var(--text-muted); }
+        .site-footer { margin-top: 40px; padding: 40px 0; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .site-footer p, .site-footer p a { color: var(--text-muted); text-decoration: none; }
         .site-footer p a:hover { text-decoration: underline; }
         .social-links a { color: var(--text-muted); font-size: 1.5rem; margin-left: 20px; transition: color 0.2s; }
         .social-links a:hover { color: var(--primary-color); }
-        @media (max-width: 768px) {
-            #hero h1 { font-size: 3rem; }
-            .main-header { flex-direction: column; gap: 20px;}
+        @media (max-width: 767px) {
+            #hero h1 { font-size: 2.8rem; }
+            .section-title { font-size: 2rem; }
+            .main-header { flex-direction: column; gap: 20px; }
             .site-footer { flex-direction: column; text-align: center; }
             .social-links a { margin: 0 10px; }
+            .grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-
     <header class="main-header container">
-        <a href="#" class="logo">
+        <a href="index.html" class="logo">
             <img src="https://pluga.shop/assets/img/LogoPlugaShop-512px.png" alt="Logo Pluga.Shop">
-            <span>Pluga Shop AIOT Control Desk</span>
+            <span>AIoT Platform</span>
         </a>
         <nav class="main-nav">
-            <a href="#features">Funcionalidades</a>
+            <a href="#features">Soluções</a>
+            <a href="#use-cases">Aplicações</a>
+            <a href="#process">Como Funciona</a>
             <a href="login.html" class="btn">Acessar Plataforma</a>
         </nav>
     </header>
@@ -124,30 +104,98 @@
     <main>
         <section id="hero">
             <div class="container">
-                <h1>O Futuro da Automação na Palma da Sua Mão</h1>
+                <h1>Automação Inteligente ao Seu Alcance.</h1>
                 <p>Monitore, controle e automatize seus dispositivos de forma inteligente e segura, de qualquer lugar do mundo. A solução definitiva para sua casa ou negócio.</p>
-                <a href="login.html" class="btn">Começar Agora</a>
+                <a href="login.html" class="btn">Comece a Controlar Agora</a>
             </div>
         </section>
 
         <section id="features" class="section">
             <div class="container">
-                <h2 class="section-title">Controle Sem Limites</h2>
-                <div class="features-grid">
+                <h2 class="section-title">Para Quem é a Nossa Solução?</h2>
+                <p class="section-subtitle">Seja você um entusiasta da tecnologia, um pequeno empresário ou um profissional da indústria, nossa plataforma é flexível para atender sua necessidade.</p>
+                <div class="grid">
                     <div class="feature-card">
-                        <i class="fas fa-bolt"></i>
-                        <h3>Controle em Tempo Real</h3>
-                        <p>Com a tecnologia MQTT, seus comandos são executados instantaneamente, sem atrasos ou esperas.</p>
+                        <i class="fas fa-home"></i>
+                        <h3>Automação Residencial</h3>
+                        <p>Controle luzes, aquários, sistemas de irrigação e muito mais, criando uma verdadeira casa inteligente com rotinas personalizadas.</p>
                     </div>
                     <div class="feature-card">
-                        <i class="fas fa-shield-alt"></i>
-                        <h3>Segurança de Ponta</h3>
-                        <p>Sua conta e seus dispositivos são isolados e protegidos com autenticação moderna e segura.</p>
+                        <i class="fas fa-store"></i>
+                        <h3>Pequenos Negócios</h3>
+                        <p>Automatize vitrines, letreiros luminosos, equipamentos de cozinha ou qualquer processo que precise de controle remoto e agendado.</p>
                     </div>
-                    <div class="feature-card">
-                        <i class="fas fa-mobile-alt"></i>
-                        <h3>Acesso Universal</h3>
-                        <p>Acesse seu painel de controle a partir de qualquer navegador, seja no seu computador, tablet ou smartphone.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="use-cases" class="section" style="background-color: var(--card-color);">
+            <div class="container">
+                <h2 class="section-title">Infinitas Possibilidades</h2>
+                <p class="section-subtitle">De uma simples lâmpada a sistemas complexos, veja o que você pode controlar.</p>
+                <div class="grid">
+                    <div class="use-case-card">
+                        <img src="assets/img/free-online-led-control-app.jpg" alt="Iluminação inteligente controlada por aplicativo">
+                        <div class="use-case-card-content"><h3>Iluminação Inteligente</h3><p>Crie ambientes, agende horários e economize energia controlando todas as luzes da sua casa ou escritório.</p></div>
+                    </div>
+                    <div class="use-case-card">
+                        <img src="assets/img/free-online-pets-eat-online-on-off.jpg" alt="Alimentador de pets automatizado servindo ração para cães e gatos">
+                        <div class="use-case-card-content"><h3>Alimentador de Pets Inteligente</h3><p>Garanta a alimentação do seu pet nos horários exatos, mesmo à distância. Controle porções e horários pelo app.</p></div>
+                    </div>
+                    <div class="use-case-card">
+                        <img src="assets/img/free-online-cofe-machine-on-off.jpg" alt="Cafeteira sendo ativada remotamente por um aplicativo de celular">
+                        <div class="use-case-card-content">
+                            <h3>O Aroma do Futuro, Agora</h3>
+                            <p>Programe sua cafeteira para preparar seu café minutos antes de você acordar. Comece o dia com o café perfeito, sempre pronto.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-card">
+                        <img src="assets/img/free-online-automatic-gardensprinkler.jpg" alt="Jardinagem e Irrigação automatizada por agendamento">
+                        <div class="use-case-card-content"><h3>Jardinagem e Irrigação</h3><p>Nunca mais esqueça de regar suas plantas. Automatize seu sistema de irrigação com base em horários ou sensores.</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="process" class="section">
+            <div class="container">
+                <h2 class="section-title">O Caminho Para o Controle Total</h2>
+                <p class="section-subtitle">Em três passos simples, seu mundo estará conectado.</p>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Conecte</h3>
+                        <p>Ligue nosso dispositivo pré-configurado à energia e conecte-o aos seus aparelhos eletrônicos.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Reivindique</h3>
+                        <p>Acesse nossa plataforma, crie sua conta e reivindique seu dispositivo usando o código UUID exclusivo.</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Controle</h3>
+                        <p>Pronto! Acesse seu painel de qualquer lugar e tenha o controle total na palma da sua mão.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="section" style="background-color: var(--card-color);">
+            <div class="container">
+                <h2 class="section-title">Aprovado Por Quem Usa</h2>
+                <div class="grid">
+                    <div class="testimonial-card">
+                        <p>"Finalmente consegui automatizar a iluminação e os filtros do meu aquário sem complicação. A plataforma é super intuitiva e a resposta é instantânea. Recomendo!"</p>
+                        <span class="author">- Joana M., Aquarista Amadora</span>
+                    </div>
+                    <div class="testimonial-card">
+                        <p>"Uso para controlar os letreiros da minha loja. Poder ligar e desligar tudo pelo celular depois do expediente mudou meu dia a dia. É o tipo de tecnologia que realmente ajuda."</p>
+                        <span class="author">- Carlos V., Dono de Café</span>
                     </div>
                 </div>
             </div>
@@ -156,15 +204,14 @@
         <footer class="site-footer container">
             <p>&copy; 2025 - Desenvolvido com ❤️ e muito café por <a href="https://www.linkedin.com/in/reltonfidelis/" target="_blank">Relton Lima</a>. Todos os direitos reservados.</p>
             <div class="social-links">
-                <a href="https://github.com/reltonlima" target="_blank" aria-label="GitHub">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://linkedin.com/in/reltonfidelis" target="_blank" aria-label="LinkedIn">
-                    <i class="fab fa-linkedin"></i>
-                </a>
+                <a href="https://github.com/reltonlima" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/reltonfidelis" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
             </div>
         </footer>
     </main>
 
+    <script>
+        // Landing page 100% otimizada para velocidade. Sem JavaScript complexo.
+    </script>
 </body>
 </html>
