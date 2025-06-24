@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'public', 'index.html'));
 });
 
-// Rotina de Inicialização ajustada para o teste SMTP
+// Rotina de Inicialização Final
 const startServer = async () => {
     await db.testDbConnection();
-    await emailService.testSmtpConnection(); // Chama a função de teste SMTP
+    await emailService.testApiConnection(); // Chama a função de teste da API
     
     app.listen(PORT, () => {
         console.log(`Servidor full-stack rodando! Acesse a landing page em http://localhost:${PORT}`);

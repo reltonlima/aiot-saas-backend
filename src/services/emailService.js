@@ -1,49 +1,56 @@
 // Caminho: aiot-saas-backend/src/services/emailService.js
 
-const nodemailer = require('nodemailer');
+const Brevo = require('@getbrevo/brevo');
 require('dotenv').config();
 
-// Configura o "transportador" de e-mail usando as credenciais SMTP do .env
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_PORT == 465,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-});
-
-const sendEmail = async ({ to, subject, html }) => {
+// Função de teste para verificar a conexão com a API
+const testApiConnection = async () => {
     try {
-        const info = await transporter.sendMail({
-            from: `"Pluga.Shop AIoT" <${process.env.SMTP_USER}>`,
-            to: to,
-            subject: subject,
-            html: html,
-        });
-        console.log("E-mail de teste SMTP enviado com sucesso: %s", info.messageId);
-        return info;
+        // 1. Instancia-se diretamente a API que queremos usar (AccountApi para o teste)
+        const apiInstance = new Brevo.AccountApi();
+        
+        // 2. O método .setApiKey() é chamado NA INSTÂNCIA para autenticá-la.
+        // Ele recebe o TIPO da chave e a CHAVE em si.
+        apiInstance.setApiKey(Brevo.AccountApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+        // 3. Executa a chamada com a instância autenticada.
+        await apiInstance.getAccount();
+        console.log('Serviço de E-mail (API Brevo) configurado e pronto para uso.');
     } catch (error) {
-        console.error("Erro ao tentar enviar e-mail via SMTP:", error);
-        throw error;
+        console.error('*******************************************************************');
+        console.error('*** ATENÇÃO: Falha ao conectar com a API do Brevo. ***');
+        console.error('*** Verifique se a BREVO_API_KEY no arquivo .env está correta. ***');
+        console.error('*******************************************************************');
     }
 };
 
-const testSmtpConnection = async () => {
+// Função para enviar os e-mails
+const sendEmail = async ({ to, subject, html }) => {
     try {
-        await transporter.verify();
-        console.log('Serviço de E-mail (SMTP) configurado e pronto para uso.');
+        // Repetimos o mesmo padrão para a API de e-mails
+        const apiInstance = new Brevo.TransactionalEmailsApi();
+        apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
+
+        const sendSmtpEmail = new Brevo.SendSmtpEmail();
+
+        sendSmtpEmail.sender = {
+            email: 'hello@pluga.shop', // IMPORTANTE: Coloque seu e-mail de remetente aqui
+            name: 'Pluga.Shop AIoT'
+        };
+        sendSmtpEmail.to = [{ email: to }];
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = html;
+
+        const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+        console.log("E-mail enviado com sucesso via API Brevo:", response.body);
+        return response;
     } catch (error) {
-        console.error('*******************************************************************');
-        console.error('*** ATENÇÃO: Falha ao conectar com o serviço de E-mail (SMTP) ***');
-        console.error(`*** ERRO: ${error.message} ***`);
-        console.error('*** Verifique as credenciais SMTP no .env e as regras de firewall (ufw). ***');
-        console.error('*******************************************************************');
+        console.error("Erro ao enviar e-mail via API Brevo:", error.response ? error.response.text : error.message);
+        throw error;
     }
 };
 
 module.exports = { 
     sendEmail,
-    testSmtpConnection // Exporta a função de teste SMTP
+    testApiConnection
 };
