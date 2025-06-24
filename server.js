@@ -26,7 +26,7 @@ const startServer = async () => {
     await emailService.testApiConnection(); // Chama a função de teste da API
     
     app.listen(PORT, () => {
-        console.log(`Servidor full-stack rodando! Acesse a landing page em http://localhost:${PORT}`);
+        console.log(`Servidor full-stack rodando! Acesse a landing page em ${process.env.BASE_URL}`);
     });
 };
 
