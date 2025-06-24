@@ -1,7 +1,9 @@
 // Caminho: aiot-saas-backend/src/services/emailService.js
+
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
+// Configura o "transportador" de e-mail usando as credenciais SMTP do .env
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
@@ -20,11 +22,10 @@ const sendEmail = async ({ to, subject, html }) => {
             subject: subject,
             html: html,
         });
-        console.log("E-mail enviado com sucesso: %s", info.messageId);
+        console.log("E-mail de teste SMTP enviado com sucesso: %s", info.messageId);
         return info;
     } catch (error) {
-        console.error("Erro ao tentar enviar e-mail:", error);
-        // Lança o erro para que a função que o chamou (ex: register) saiba que falhou.
+        console.error("Erro ao tentar enviar e-mail via SMTP:", error);
         throw error;
     }
 };
@@ -36,15 +37,13 @@ const testSmtpConnection = async () => {
     } catch (error) {
         console.error('*******************************************************************');
         console.error('*** ATENÇÃO: Falha ao conectar com o serviço de E-mail (SMTP) ***');
-        console.error('*** O envio de e-mails (registro/recuperação) não funcionará. ***');
-        console.error('*** Verifique as credenciais SMTP no arquivo .env e as regras de firewall. ***');
+        console.error(`*** ERRO: ${error.message} ***`);
+        console.error('*** Verifique as credenciais SMTP no .env e as regras de firewall (ufw). ***');
         console.error('*******************************************************************');
-        // !!! MUDANÇA IMPORTANTE: REMOVEMOS O process.exit(1) !!!
-        // A aplicação agora continuará rodando mesmo se o e-mail falhar.
     }
 };
 
 module.exports = { 
     sendEmail,
-    testSmtpConnection
+    testSmtpConnection // Exporta a função de teste SMTP
 };
