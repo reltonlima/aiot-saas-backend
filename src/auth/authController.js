@@ -24,7 +24,7 @@ const register = async (req, res) => {
             [email, passwordHash, verificationToken]
         );
 
-        const verificationUrl = `http://localhost:3000/v1/auth/verify-email?token=${verificationToken}`;
+        const verificationUrl = `/v1/auth/verify-email?token=${verificationToken}`;
 
         await sendEmail({
             to: email,
@@ -128,7 +128,7 @@ const requestPasswordReset = async (req, res) => {
                 [resetToken, expiresAt, user.id]
             );
 
-            const resetUrl = `http://localhost:3000/reset-password.html?token=${resetToken}`;
+            const resetUrl = `/reset-password.html?token=${resetToken}`;
 
             await sendEmail({
                 to: user.email,
