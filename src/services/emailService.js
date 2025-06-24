@@ -2,18 +2,16 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// 1. Configura o "transportador" de e-mail usando as credenciais do .env
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
-    secure: process.env.SMTP_PORT == 465, // true para a porta 465, false para as outras
+    secure: process.env.SMTP_PORT == 465,
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
     },
 });
 
-// 2. Cria e exporta uma função para enviar os e-mails
 const sendEmail = async ({ to, subject, html }) => {
     try {
         const info = await transporter.sendMail({
@@ -22,30 +20,31 @@ const sendEmail = async ({ to, subject, html }) => {
             subject: subject,
             html: html,
         });
-
-        console.log("E-mail de produção enviado com sucesso: %s", info.messageId);
+        console.log("E-mail enviado com sucesso: %s", info.messageId);
         return info;
     } catch (error) {
-        console.error("Erro ao enviar e-mail de produção:", error);
+        console.error("Erro ao tentar enviar e-mail:", error);
+        // Lança o erro para que a função que o chamou (ex: register) saiba que falhou.
         throw error;
     }
 };
 
-// ==========================================================
-// === NOVA FUNÇÃO DE VERIFICAÇÃO DE STATUS (NOSSO NOVO PADRÃO) ===
-// ==========================================================
 const testSmtpConnection = async () => {
     try {
         await transporter.verify();
         console.log('Serviço de E-mail (SMTP) configurado e pronto para uso.');
     } catch (error) {
-        console.error('*** ERRO: Falha ao conectar com o serviço de E-mail (SMTP) ***');
-        console.error(error.message);
-        process.exit(1);
+        console.error('*******************************************************************');
+        console.error('*** ATENÇÃO: Falha ao conectar com o serviço de E-mail (SMTP) ***');
+        console.error('*** O envio de e-mails (registro/recuperação) não funcionará. ***');
+        console.error('*** Verifique as credenciais SMTP no arquivo .env e as regras de firewall. ***');
+        console.error('*******************************************************************');
+        // !!! MUDANÇA IMPORTANTE: REMOVEMOS O process.exit(1) !!!
+        // A aplicação agora continuará rodando mesmo se o e-mail falhar.
     }
 };
 
 module.exports = { 
     sendEmail,
-    testSmtpConnection // Exportamos a nova função
+    testSmtpConnection
 };
