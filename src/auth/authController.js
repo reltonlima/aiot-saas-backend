@@ -15,16 +15,15 @@ const register = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const passwordHash = await bcrypt.hash(password, salt);
 
-        // Usamos o ID do usuário no token, é mais seguro que o e-mail.
-        const tempUserPayloadForToken = { email: email, purpose: 'verify-email' };
-        const verificationToken = jwt.sign(tempUserPayloadForToken, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const verificationToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         await db.query(
             'INSERT INTO users (email, password_hash, email_verification_token) VALUES ($1, $2, $3)',
             [email, passwordHash, verificationToken]
         );
 
-        const verificationUrl = `http://localhost:3000/v1/auth/verify-email?token=${verificationToken}`;
+        // Constrói a URL de verificação usando a variável de ambiente.
+        const verificationUrl = `${process.env.BASE_URL}/v1/auth/verify-email?token=${verificationToken}`;
 
         await sendEmail({
             to: email,
@@ -128,7 +127,11 @@ const requestPasswordReset = async (req, res) => {
                 [resetToken, expiresAt, user.id]
             );
 
-            const resetUrl = `/reset-password.html?token=${resetToken}`;
+            // ==========================================================
+            // === CORREÇÃO FINAL APLICADA AQUI ===
+            // ==========================================================
+            // A URL de redefinição agora usa a variável de ambiente para funcionar em produção.
+            const resetUrl = `${process.env.BASE_URL}/reset-password.html?token=${resetToken}`;
 
             await sendEmail({
                 to: user.email,
@@ -182,7 +185,6 @@ const resetPassword = async (req, res) => {
         res.status(500).json({ error: 'Erro interno do servidor.' });
     }
 };
-
 
 module.exports = {
     register,
