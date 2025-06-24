@@ -30,6 +30,8 @@
         .btn-secondary { background-color: #374151; }
         .btn-secondary:hover { background-color: #4b5563; }
         #status-message { text-align: center; margin-top: 20px; font-weight: 500; min-height: 24px; }
+        .forgot-password-link { display: block; text-align: center; margin-top: 25px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem;}
+        .forgot-password-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -50,21 +52,21 @@
                 <button class="btn btn-secondary" id="register-btn">Registrar</button>
             </div>
             <p id="status-message"></p>
+            
+            <a href="forgot-password.html" class="forgot-password-link">Esqueci minha senha</a>
         </div>
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:3000/v1';
+        const API_BASE_URL = 'http://localhost:3000/v1'; 
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const loginBtn = document.getElementById('login-btn');
         const registerBtn = document.getElementById('register-btn');
         const statusMessage = document.getElementById('status-message');
 
-        // Imediatamente verifica se o usuário já está logado
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('authToken')) {
-                // Usa um caminho relativo para funcionar com o Live Server
                 window.location.href = 'dashboard.html';
             }
         });
@@ -100,7 +102,7 @@
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
             if (!email || !password) return setStatus('Por favor, preencha ambos os campos.');
-            setStatus('Registrando...', false);
+            setStatus('Registrando e enviando e-mail de verificação...', false);
 
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -108,10 +110,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-                const data = await response.json();
+                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Falha no registro.');
 
-                setStatus('Registrado com sucesso! Faça o login.', false);
+                setStatus(data.message, false);
             } catch (error) {
                 setStatus(error.message);
             }

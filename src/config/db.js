@@ -3,28 +3,42 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const connectionString = process.env.DATABASE_URL;
-
 const pool = new Pool({
-  connectionString: connectionString,
-  // SSL é necessário para conexões remotas com serviços como Supabase/Heroku/etc.
-  ssl: connectionString ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-// --- NOVA FUNÇÃO PARA TESTAR A CONEXÃO ---
+// --- NOVA FUNÇÃO DE QUERY EXPLÍCITA E ROBUSTA ---
+const query = async (text, params) => {
+    const start = Date.now();
+    const client = await pool.connect(); // 1. Pega um cliente do pool
+    try {
+        const res = await client.query(text, params); // 2. Executa a query
+        const duration = Date.now() - start;
+        console.log('[DB] Query executada:', { text, duration: `${duration}ms`, rows: res.rowCount });
+        return res;
+    } catch (error) {
+        console.error('[DB] Erro na query:', { text });
+        throw error;
+    } finally {
+        client.release(); // 3. O MAIS IMPORTANTE: sempre libera o cliente de volta para o pool
+    }
+};
+
 const testDbConnection = async () => {
     try {
-        await pool.query('SELECT NOW()'); // Faz uma consulta simples para testar
+        // Agora o teste também usa nossa função de query robusta
+        await query('SELECT NOW()');
         console.log('Backend conectado ao Banco de Dados (Supabase) com sucesso!');
     } catch (error) {
         console.error('*** ERRO: Falha ao conectar com o Banco de Dados (Supabase) ***');
-        console.error(error.message);
-        // Encerra a aplicação se não conseguir conectar ao banco, pois ela não funcionará corretamente.
-        process.exit(1);
+        // Não precisamos mais do process.exit(1) aqui, pois a função query já lança o erro
     }
 };
 
 module.exports = {
-  query: (text, params) => pool.query(text, params),
-  testDbConnection // Exportamos a nova função
+  query, // Exportamos a nova função de query
+  testDbConnection
 };

@@ -9,7 +9,11 @@ const authenticateToken = require('../auth/authMiddleware');
 // --- Rotas de Autenticação (Públicas) ---
 router.post('/auth/register', authController.register);
 router.post('/auth/login', authController.login);
-router.get('/auth/verify-email', authController.verifyEmail); // <-- NOVA ROTA DE VERIFICAÇÃO
+router.get('/auth/verify-email', authController.verifyEmail);
+// --- NOVAS ROTAS DE RECUPERAÇÃO DE SENHA ---
+router.post('/auth/request-password-reset', authController.requestPasswordReset);
+router.post('/auth/reset-password', authController.resetPassword);
+
 
 // --- Rotas de Dispositivos (Protegidas) ---
 router.get('/devices', authenticateToken, deviceController.listDevices);

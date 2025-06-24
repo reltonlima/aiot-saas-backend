@@ -2,8 +2,8 @@
 
 require('dotenv').config();
 const express = require('express');
-const cors =require('cors');
-const path = require('path'); // Importa o módulo 'path' do Node.js, essencial para caminhos de arquivo
+const cors = require('cors');
+const path = require('path');
 const apiRoutes = require('./src/api/routes');
 const db = require('./src/config/db');
 const emailService = require('./src/services/emailService');
@@ -23,24 +23,31 @@ app.use(cors(corsOptions));
 // Middlewares padrões
 app.use(express.json());
 
+// Servir arquivos estáticos da pasta 'public'
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 // =====================================================================
-// === CORREÇÃO APLICADA AQUI ===
+// === NOVO MIDDLEWARE DE LOG PARA DEPURAR ===
 // =====================================================================
-// Diz ao Express para servir qualquer arquivo estático que esteja na pasta 'src/public'.
-// Agora, quando uma requisição chegar para /login.html, o Express irá encontrá-lo e entregá-lo.
-app.use(express.static(path.join(__dirname, 'src', 'public')));
+// Este middleware será executado para TODAS as requisições que chegarem.
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] Rota recebida: ${req.method} ${req.originalUrl}`);
+    // Se a requisição tiver um corpo (body), também o logamos
+    if (req.body && Object.keys(req.body).length > 0) {
+        console.log('   Corpo da requisição:', req.body);
+    }
+    next(); // Passa a requisição para o próximo handler (nossas rotas da API)
+});
 // =====================================================================
 
 
 // Rotas principais da API (com prefixo /v1)
 app.use('/v1', apiRoutes);
 
-// Rota final para servir a página principal (landing page) na raiz do site
+// Rota final para servir a landing page na raiz
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'src', 'public', 'index.html'));
 });
-
 
 // Rotina de Inicialização
 const startServer = async () => {
